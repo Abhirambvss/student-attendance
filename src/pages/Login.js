@@ -12,6 +12,7 @@ function Login() {
 
     const responseGoogle = (response) => {
         console.log(response);
+        console.log(name, accessToken, imageUrl);
     }
     const loginSuccess = (response) => {
         if (response.accessToken) {

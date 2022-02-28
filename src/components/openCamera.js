@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Webcam from "react-webcam";
-import formData from "./sampledata";
 
 export default function OpenCamera() {
   // const [deviceId, setDeviceId] = useState({});
-  const [url, setUrl] = useState(null)
+  // const [url, setUrl] = useState(null)
+  const url = ""
   const [devices, setDevices] = useState([]);
   const [imgSrc, setImgSrc] = useState(null);
   const [isShowVideo, setIsShowVideo] = useState(false);
@@ -39,12 +39,12 @@ export default function OpenCamera() {
     setImgSrc(imageSrc)
   }
 
-  const stopCam = () => {
-    let stream = webcamRef.current.stream;
-    const tracks = stream.getTracks();
-    tracks.forEach(track => track.stop());
-    setIsShowVideo(false);
-  }
+  // const stopCam = () => {
+  //   let stream = webcamRef.current.stream;
+  //   const tracks = stream.getTracks();
+  //   tracks.forEach(track => track.stop());
+  //   setIsShowVideo(false);
+  // }
   const requestOptions = {
     method: 'POST',
     headers: {
@@ -83,6 +83,7 @@ export default function OpenCamera() {
       ))}
 
       {imgSrc && (
+        // eslint-disable-next-line jsx-a11y/img-redundant-alt
         <><img className="m-2 p-2 flex justify-center" height={500} width={500} src={imgSrc} alt="captured image" />
           <a href={imgSrc} >Link</a></>)}
       <button className=" bg-sky-500 hover:bg-sky-600 text-white border-2 rounded-lg border-black-500/100 p-2 m-2 " onClick={() => {

@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import storageRef from '../firebase'
-import OpenCamera from '../components/openCamera';
 
 
 const StudentDetails = () => {
     const [name, setName] = useState("")
     const uploadStudentDetails = () => {
-        const details = storageRef("teacher").push({
+        storageRef("teacher").push({
             name: name,
             complete: false,
         }).catch(alert);

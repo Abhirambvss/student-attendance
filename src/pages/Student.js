@@ -5,7 +5,6 @@ import OpenCamera from '../components/openCamera'
 const Student = () => {
     const [openCamera, setopenCamera] = useState(false);
     const [webcamUrl, setwebcamUrl] = useState("");
-    console.log(setwebcamUrl);
 
     return (
         <div>

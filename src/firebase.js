@@ -1,10 +1,7 @@
 import { initializeApp } from "firebase/app";
-import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import "firebase/compat/storage"
-import { getStorage, ref } from 'firebase/storage'
-
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyDrlbnoN-wRc3PeyT-JFpxjvFaSOzzh2Ls",
   authDomain: "abhiramstudentattendance.firebaseapp.com",
@@ -17,7 +14,11 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const storage = getStorage();
-const storageRef = ref(storage);
-const imagesRef = ref(storage, 'images');
-export default { storage, firebase };
+const db = getFirestore();
+const colRef = collection(db, 'teachers')
+
+getDocs(colRef)
+  .then((snapshot) => {
+    console.log(snapshot.docs);
+  })
+export { app, db, colRef };

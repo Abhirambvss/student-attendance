@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import Webcam from "react-webcam";
+import StudentDetails from "./StudentDetails"
+import data from "./sampledata"
 
 export default function OpenCamera() {
+
   // const [deviceId, setDeviceId] = useState({});
   // const [url, setUrl] = useState(null)
-  const url = ""
+  const url = "https://firebasestorage.googleapis.com/v0/b/test-project-406cd.appspot.com/o/users%2FLWz9G4l6QyW4R5JZVSS7C0aiK7g2%2Fdp%2FMital%20Kamani.jpg_dp?alt=media&token=093bff59-f72a-470d-9f1d-fc48882ac6bb"
   const [devices, setDevices] = useState([]);
   const [imgSrc, setImgSrc] = useState(null);
   const [isShowVideo, setIsShowVideo] = useState(false);
-  const KEY = "81fb7354ae5f46dfa3e4697a1978c1a2"
-  const face_api_url = 'https://centralindia.api.cognitive.microsoft.com/face/v1.0/detect'
+  const KEY = process.env.REACT_APP_FACE_API_KEY
+  const face_api_url = process.env.REACT_APP_FACE_API_ENDPOINT
+  console.log(face_api_url);
   const handleDevices = React.useCallback(
     mediaDevices =>
       setDevices(mediaDevices.filter(({ kind }) => kind === "videoinput")),
@@ -17,6 +21,7 @@ export default function OpenCamera() {
   );
 
 
+  const faceId1 = "6740e974-8528-42a3-9d18-d1b500fe5925"
 
 
   React.useEffect(
@@ -28,11 +33,13 @@ export default function OpenCamera() {
   const webcamRef = React.useRef(null);
   const startCam = () => {
     setIsShowVideo(true);
-    const imageSrc = webcamRef.current.getScreenshot();
+    const imageSrc = webcamRef.current.getScreenshot()
     setImgSrc(imageSrc)
-    console.log(imgSrc);
-
+    console.log(imageSrc);
   }
+
+
+
   const ReStartCam = () => {
     setIsShowVideo(false);
     const imageSrc = webcamRef.current.getScreenshot();
@@ -45,6 +52,8 @@ export default function OpenCamera() {
   //   tracks.forEach(track => track.stop());
   //   setIsShowVideo(false);
   // }
+
+  const a = localStorage.getItem('localImage')
   const requestOptions = {
     method: 'POST',
     headers: {
@@ -52,11 +61,10 @@ export default function OpenCamera() {
       'Ocp-Apim-Subscription-Key': KEY,
     },
     body: JSON.stringify({
-      "url": url, "returnFaceId": 'true',
+      "url": data
+      , "returnFaceId": 'true',
     })
   };
-
-
 
   return (
     <div className="justify-center">
@@ -86,6 +94,7 @@ export default function OpenCamera() {
         // eslint-disable-next-line jsx-a11y/img-redundant-alt
         <><img className="m-2 p-2 flex justify-center" height={500} width={500} src={imgSrc} alt="captured image" />
           <a href={imgSrc} >Link</a></>)}
+      <StudentDetails />
       <button className=" bg-sky-500 hover:bg-sky-600 text-white border-2 rounded-lg border-black-500/100 p-2 m-2 " onClick={() => {
         fetch(face_api_url, requestOptions)
           .then(async response => {
@@ -95,6 +104,7 @@ export default function OpenCamera() {
 
           })
       }}>Submit</button>
+      {a && <img className="h-24 w-24" src={URL.createObjectURL(a)} alt="image" />}
 
     </div>
   )

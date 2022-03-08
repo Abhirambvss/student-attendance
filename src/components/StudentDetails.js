@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react'
-import { db } from '../firebase'
 import uuid from 'react-uuid'
 
 
@@ -8,10 +7,10 @@ const StudentDetails = () => {
     const [name, setName] = useState("")
     const [postImage, setAttachments] = useState(undefined)
     const uploadImageInDirectory = async (directory, id, picture) => {
-        if (!picture) return undefined
-        const nameOfPicture = picture.name + '_' + id
-        await db.push(`${directory}/${nameOfPicture}`, picture)
-        return await db.ref(directory).child(nameOfPicture).getDownloadURL()
+        // if (!picture) return undefined
+        // const nameOfPicture = picture.name + '_' + id
+        // await db.push(`${directory}/${nameOfPicture}`, picture)
+        // return await db.ref(directory).child(nameOfPicture).getDownloadURL()
     }
     // const uploadStudentDetails = () => {
     //     storageRef("teacher").push({

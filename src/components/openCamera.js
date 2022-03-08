@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Webcam from "react-webcam";
 import StudentDetails from "./StudentDetails"
-import data from "./sampledata"
 
 export default function OpenCamera() {
 
@@ -57,11 +56,11 @@ export default function OpenCamera() {
   const requestOptions = {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/octet-stream',
+      'Content-Type': 'application/json',
       'Ocp-Apim-Subscription-Key': KEY,
     },
     body: JSON.stringify({
-      "url": data
+      "url": "https://abhiramstudentattendance.blob.core.windows.net/student-attendance/201901266.jpg"
       , "returnFaceId": 'true',
     })
   };

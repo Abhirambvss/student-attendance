@@ -20,7 +20,6 @@ export default function OpenCamera() {
   );
 
 
-  const faceId1 = "6740e974-8528-42a3-9d18-d1b500fe5925"
 
 
   React.useEffect(

@@ -3,13 +3,15 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import React, { useState } from 'react';
 import PhotoUpload from '../components/PhotoUpload'
 import { Redirect } from "react-router";
+import { useHistory } from "react-router-dom";
+
 
 function Login() {
 
     const [name, setName] = useState("");
     const [login, setLogin] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
-
+    const history = useHistory();
     const responseGoogle = (response) => {
         console.log(response);
         console.log(name, imageUrl);
@@ -23,6 +25,7 @@ function Login() {
             localStorage.setItem('login', 1)
             localStorage.setItem('name', response.profileObj.name)
             localStorage.setItem('imageUrl', response.profileObj.imageUrl)
+            history.push("/profession");
 
 
         }
@@ -37,7 +40,7 @@ function Login() {
 
         <div className="mx-2 px-2 flex justify-center h-screen items-center">
 
-            {!login ? (<GoogleLogin
+            {!login && (<GoogleLogin
                 clientId="858497450675-u1qu337nrih4h9bouobiq1dktdpaisce.apps.googleusercontent.com"
                 buttonText="Login"
                 onSuccess={loginSuccess}
@@ -45,11 +48,9 @@ function Login() {
                 cookiePolicy={'single_host_origin'}
                 isSignedIn={true}
             // className="m-auto"
-            />)
-                :
-                <Redirect to={"/profession"} />
+            />)}
 
-            }
+
         </div>
 
     );

@@ -1,8 +1,6 @@
 // import './App.css';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import React, { useState } from 'react';
-import PhotoUpload from '../components/PhotoUpload'
-import { Redirect } from "react-router";
 import { useHistory } from "react-router-dom";
 
 

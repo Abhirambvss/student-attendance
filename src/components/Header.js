@@ -1,22 +1,9 @@
-// import React from "react";
-// export const Header = () => {
-//     return (
-//         <div className="bg-blue">
-//             <h1 href="#" className="logo">
-//                 HOOKED
-//             </h1>
-//         </div>
-//     );
-// };
-// export default Header;
-
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 
 
-const clientId = "858497450675-u1qu337nrih4h9bouobiq1dktdpaisce.apps.googleusercontent.com";
-const Default = "/images/user.png";
+const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 
 const NavBar = () => {
@@ -90,7 +77,7 @@ const NavBar = () => {
                             <span style={{ margin: "3px 15px 0px 0px", zIndex: "10" }}>
                                 <img
                                     className="dropbtn"
-                                    src={proPic ? proPic : Default}
+                                    src={proPic ? proPic : null}
                                     alt="Profile image"
                                 />
                             </span>

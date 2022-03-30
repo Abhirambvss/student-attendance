@@ -1,18 +1,22 @@
 import React, { useState } from 'react'
 import { GoogleLogout } from 'react-google-login';
 import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const Profession = () => {
     const [showLogoutButton, setShowlogoutButton] = useState(false)
     const login = localStorage.getItem('login')
     const name = localStorage.getItem('name')
     const imageUrl = localStorage.getItem('imageUrl')
+    const history = useHistory();
+
     const Logout = () => {
         localStorage.removeItem('login')
         localStorage.removeItem('name')
         localStorage.removeItem('imageUrl')
         console.clear()
         alert("You have been logged out successfully");
+        history.push("/")
 
 
     }

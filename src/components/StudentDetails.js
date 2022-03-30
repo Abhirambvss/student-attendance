@@ -1,57 +1,183 @@
-import React, { useState, useCallback } from 'react'
-import uuid from 'react-uuid'
+import React, { useEffect, useState } from 'react';
+import { uploadFileToBlob, deleteFiles, isStorageConfigured } from './blobStorage/addImageToBlob';
+import axios from "axios";
 
+const storageConfigured = isStorageConfigured();
 
 
 const StudentDetails = () => {
-    const [name, setName] = useState("")
-    const [postImage, setAttachments] = useState(undefined)
-    const uploadImageInDirectory = async (directory, id, picture) => {
-        // if (!picture) return undefined
-        // const nameOfPicture = picture.name + '_' + id
-        // await db.push(`${directory}/${nameOfPicture}`, picture)
-        // return await db.ref(directory).child(nameOfPicture).getDownloadURL()
-    }
-    // const uploadStudentDetails = () => {
-    //     storageRef("teacher").push({
-    //         name: name,
-    //         complete: false,
-    //     }).catch(alert);
-    // };
-    const onUploadImage = (async () => {
-        const postID = uuid()
-        console.log("hello");
-        const imageURL = await uploadImageInDirectory('posts', postID, postImage)
-        console.log(imageURL);
-        console.log("bye");
+    const [fetchData, setFetchData] = useState([]);
+    const [fileName, setFileName] = useState("");
+    const [data, setData] = useState({
+        name: "",
+        rollNumber: "",
+    });
+    const [blobList, setBlobList] = useState([]);
+
+    // current file to upload into container
+    const [fileSelected, setFileSelected] = useState(null);
+
+    // current file to delete from container
+
+    // UI/form management
+    const [uploading, setUploading] = useState(false);
+    const [inputKey, setInputKey] = useState(Math.random().toString(36));
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/teacher')
+            .then(res => {
+                setFetchData(res.data)
+            })
 
     })
 
 
-    const onAttachmentUpload = useCallback(
-        (event) => {
-            const image = event.target.files[0]
-            localStorage.setItem('localImage', event.target.files[0])
-            setAttachments(image)
-        },
-        [setAttachments]
-    )
+
+    const onFileChange = (event) => {
+        // capture file into state
+        setFileSelected(event.target.files[0]);
+        setFileName(event.target.files[0].name)
+    };
     const handleOnChange = (e) => {
-        setName(e.target.value);
+        const value = e.target.value;
+        setData({
+            ...data,
+            [e.target.name]: value
+        });
+    }
+    const onSubmit = async (e) => {
+
+        e.preventDefault();
+        const imageUrl = await onFileUpload();
+        console.log(imageUrl);
+        const imageFileUrl = 'https://abhiramstudentattendance.blob.core.windows.net/student-attendance/' + fileName
+        console.log(imageFileUrl);
+        const userData = {
+            name: data.name,
+            rollNumber: data.rollNumber,
+            imageURL: imageFileUrl
+        };
+
+        axios.post("http://localhost:5000/teacher", userData).then((response) => {
+            // console.log(response.data);
+            console.log(response.status);
+        });
+        setData({
+            name: "",
+            rollNumber: ""
+        })
     }
 
-    return (
+    const onFileUpload = async () => {
+        // prepare UI
+        setUploading(true);
 
-        <div>
+        // *** UPLOAD TO AZURE STORAGE ***
+        const blobsInContainer = await uploadFileToBlob(fileSelected);
+        // setImageUrl(blobsInContainer);
+        // prepare UI for results
+        setBlobList(blobsInContainer);
+
+        // reset state/form
+        setFileSelected(null);
+        setUploading(false);
+        setInputKey(Math.random().toString(36));
+        return blobsInContainer;
+    };
+
+    const onDelete = async (imageFile) => {
+        setUploading(true);
+        const blobsInContainer = await deleteFiles(imageFile);
+        setBlobList(blobsInContainer);
+        setFileSelected(null);
+        setUploading(false);
+        setInputKey(Math.random().toString(36));
+    }
+
+    const deleteDoc = async (id, imageUrl) => {
+        if (imageUrl) {
+            let temp = imageUrl.slice(imageUrl.lastIndexOf("/")).replace('/', "");
+            onDelete(temp);
+        }
+        console.log(id);
+        const url = 'http://localhost:5000/teacher'
+        await axios.delete(`${url}/${id}`)
+            .then((response) => {
+                console.log(response);
+
+            })
+        console.log("hi");
+    }
+
+    // display form
+    const DisplayForm = () => (
+
+        <div
+            className="flex flex-col justify-between items-center">
             <span className="text-gray-700" >Student name</span>
-            <input type="text" className="mt-1 block rounded text-blue-500" placeholder="Student Name" onChange={handleOnChange} />
+            <input
+                type="text"
+                className="mt-1 block rounded text-blue-500"
+                placeholder="Student Name"
+                name="name"
+                value={data.name}
+                onChange={handleOnChange} />
+
             <span className="text-gray-700">Roll Number</span>
-            <input type="text" className="mt-1 block rounded text-blue-500" placeholder="Roll Number" />
+            <input type="text"
+                className="mt-1 block rounded text-blue-500"
+                name="rollNumber"
+                placeholder="Roll Number"
+                value={data.rollNumber}
+                onChange={handleOnChange} />
+
             <span className="text-gray-700">Image of Student</span>
-            <input type="file" accept="image/png,image/jpg,image/jpeg" className="mt-1 block rounded text-blue-500" onChange={onAttachmentUpload} />
-            <button className=" bg-sky-500 hover:bg-sky-600 text-white border-2 rounded-lg border-black-500/100 p-2 m-2 justify-center" onClick={onUploadImage}>Submit</button>
-            {/* {postImage && <img className="h-24 w-24" src={URL.createObjectURL(postImage)} alt="image" />} */}
+            <input type="file" accept="image/png,image/jpg,image/jpeg" className="mt-1 block rounded text-blue-500" onChange={onFileChange} />
+            <button className=" bg-sky-500 hover:bg-sky-600 text-white border-2 rounded-lg border-black-500/100 p-2 m-2 justify-center" onClick={onSubmit}>Submit</button>
         </div>
+
     )
-}
-export default StudentDetails
+
+    return (
+        <div>
+            {storageConfigured && !uploading && DisplayForm()}
+            {storageConfigured && uploading && <div>Uploading</div>}
+            <hr />
+            {!storageConfigured && <div>Storage is not configured.</div>}
+            <div className="flex justify-center">
+                <table className="table-fixed ">
+                    <thead>
+                        <tr>
+                            <th className="m-2 p-2 content-evenly">Name</th>
+                            <th className="m-2 p-2 content-evenly">ID</th>
+                            <th className="m-2 p-2 content-evenly">Photo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        {fetchData.map((item) => {
+                            return (
+                                <tr>
+                                    <td className="m-2 p-2 content-evenly"><p>{item.name}</p>
+                                    </td>
+                                    <td className="m-2 p-2 content-evenly"><p>{item.rollNumber}</p></td>
+                                    <td className="m-2 p-2 content-evenly"> {(item.imageURL) && <img src={item.imageURL} width="100" height="100"></img>}</td>
+                                    <td className="m-2 p-2 content-evenly"> <button className=" bg-sky-500 hover:bg-sky-600 text-white border-2 rounded-lg border-black-500/100 p-2 m-2 justify-center"
+                                        onClick={() => {
+                                            deleteDoc(item._id, item.imageURL);
+                                        }}>Delete</button></td>
+                                </tr>
+
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+
+export default StudentDetails;

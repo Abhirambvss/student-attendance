@@ -6,14 +6,15 @@ const detectionModel = "detection_01";
 export const faceApiForUrl = axios.create({
     // baseURL: baseURL,
     timeout: 50000,
+    baseURL: "https://studentattendance.cognitiveservices.azure.com/",
     headers: {
         "Ocp-Apim-Subscription-Key": subscriptionKey,
         "Content-Type": "application/json"
     },
     params: {
         returnFaceId: true,
-        returnFaceLandmarks: false,
-        returnFaceAttributes: faceAttributes,
+        // returnFaceLandmarks: false,
+        // returnFaceAttributes: faceAttributes,
         detectionModel: detectionModel
     }
 });
